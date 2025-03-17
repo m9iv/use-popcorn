@@ -280,7 +280,8 @@ body {
   gap: 0.8rem;
 }
 
-.rating {
+.rating,
+.details--loading {
   background-color: var(--color-background-100);
   border-radius: 0.9rem;
   padding: 2rem 2.4rem;
@@ -289,6 +290,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
+}
+
+.details--loading {
+  margin: 5rem;
+  text-align: center;
 }
 
 .btn-add {
