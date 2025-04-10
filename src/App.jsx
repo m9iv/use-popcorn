@@ -55,13 +55,16 @@ export default function App() {
   }
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchMovies = async () => {
       try {
         setIsLoading(true)
         setError('')
 
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${query}&page=1`
+          `http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${query}&page=1`,
+          { signal: controller.signal }
         )
 
         if (!res.ok)
@@ -88,6 +91,10 @@ export default function App() {
     }
 
     fetchMovies()
+
+    return function () {
+      controller.abort()
+    }
   }, [query])
 
   return (
