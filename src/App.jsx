@@ -285,6 +285,16 @@ const MovieDetails = ({ selectedId, watched, onCloseMovie, onAddWatched }) => {
     getMovieDetails()
   }, [selectedId])
 
+  // Setting page title
+  useEffect(() => {
+    if (!title) return
+    document.title = `Movie | ${title} (${year})`
+
+    return function () {
+      document.title = 'usePopcorn'
+    }
+  }, [title, year])
+
   return (
     <div className="details">
       {isLoading ? (
