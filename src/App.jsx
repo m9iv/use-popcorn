@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import StarRating from './StarRating'
+import { useMovies } from './useMovies'
 
 // Set your key here. Read how on official page of OMDB API: https://www.omdbapi.com
 const OMDB_KEY = '9d61f073'
@@ -9,11 +10,10 @@ const average = (arr) =>
 
 export default function App() {
   const [query, setQuery] = useState('')
-  const [movies, setMovies] = useState([])
   const [watched, setWatched] = useState([])
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+
+  const { movies, isLoading, error } = useMovies(query)
 
   const handleSelectMovie = (id) => {
     setSelectedId((selectedId) => (id === selectedId ? null : id))
@@ -30,49 +30,6 @@ export default function App() {
   const handleDeleteWatched = (id) => {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id))
   }
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    const fetchMovies = async () => {
-      try {
-        setIsLoading(true)
-        setError('')
-
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${query}&page=1`,
-          { signal: controller.signal }
-        )
-
-        if (!res.ok)
-          throw new Error('Something went wrong with fetching movies')
-
-        const data = await res.json()
-        if (data.Response === 'False') throw new Error('👀 Movie not found')
-
-        if (data.Search) {
-          setMovies(data.Search.splice(0, 5))
-          setIsLoading(false)
-        }
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    if (query.length < 3) {
-      setMovies([])
-      setError('')
-      return
-    }
-
-    fetchMovies()
-
-    return function () {
-      controller.abort()
-    }
-  }, [query])
 
   return (
     <>
@@ -340,7 +297,7 @@ const MovieDetails = ({ selectedId, watched, onCloseMovie, onAddWatched }) => {
                 </>
               ) : (
                 <p>
-                  <span>🌟</span> You rated with movie: {watchedUserRating}
+                  <span>🌟</span> You rated this movie: {watchedUserRating}
                 </p>
               )}
             </div>
