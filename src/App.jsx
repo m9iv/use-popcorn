@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import StarRating from './StarRating'
 import { useMovies } from './useMovies'
+import { useLocalStorageState } from './useLocaStorageState'
 
 // Set your key here. Read how on official page of OMDB API: https://www.omdbapi.com
 const OMDB_KEY = '9d61f073'
@@ -10,7 +11,7 @@ const average = (arr) =>
 
 export default function App() {
   const [query, setQuery] = useState('')
-  const [watched, setWatched] = useState([])
+  const [watched, setWatched] = useLocalStorageState([], 'watched')
   const [selectedId, setSelectedId] = useState(null)
 
   const { movies, isLoading, error } = useMovies(query)
