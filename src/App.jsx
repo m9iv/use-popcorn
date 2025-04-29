@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import StarRating from './StarRating'
 import { useMovies } from './useMovies'
 import { useLocalStorageState } from './useLocaStorageState'
+import { useKey } from './useKey'
 
 // Set your key here. Read how on official page of OMDB API: https://www.omdbapi.com
 const OMDB_KEY = '9d61f073'
@@ -112,6 +113,14 @@ const Logo = () => {
 }
 
 const Search = ({ query, setQuery }) => {
+  const inputEl = useRef(null)
+
+  useKey('Enter', function () {
+    if (document.activeElement === inputEl.current) return
+    inputEl.current.focus()
+    setQuery('')
+  })
+
   return (
     <input
       className="search"
@@ -119,6 +128,7 @@ const Search = ({ query, setQuery }) => {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   )
 }
@@ -210,19 +220,7 @@ const MovieDetails = ({ selectedId, watched, onCloseMovie, onAddWatched }) => {
     onCloseMovie()
   }
 
-  useEffect(() => {
-    const callback = (e) => {
-      if (e.code === 'Escape') {
-        onCloseMovie()
-      }
-    }
-
-    document.addEventListener('keydown', callback)
-
-    return function () {
-      document.removeEventListener('keydown', callback)
-    }
-  }, [onCloseMovie])
+  useKey('Escape', onCloseMovie)
 
   useEffect(() => {
     async function getMovieDetails() {
